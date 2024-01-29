@@ -1,0 +1,35 @@
+version: '3.3'
+
+
+networks:
+  internship-java-api_prime:
+    external: true
+
+services:
+  api:
+    container_name: java-gateway
+    depends_on:
+      - redis_cache
+    build: .
+    ports:
+      - "8081:8081"
+    restart: always
+    environment:
+      SPRING_REDIS_HOST: redis_cache
+      SPRING_REDIS_PORT: 6379
+    networks:
+      - internship-java-api_prime
+    links:
+      - redis_cache
+
+  redis_cache:
+    container_name: java-gateway-redis
+    networks:
+      - internship-java-api_prime
+    image: redis:latest
+    restart: on-failure
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    # command: [ "redis-server","--bind","redis_cache","--port","6379" ]
+    ports:
+      - "6379:6379"
